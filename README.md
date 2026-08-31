@@ -139,7 +139,7 @@ algorithm for predicting stock market movement. Expert Systems with
 Applications, 186. 10.1016/j.eswa.2021.115836
 
 Kanwal, A., Lau, M., Ng, S., Sim, K., Chandrasekaran, S. (2022). 
-BiCuDNNLSTM-1dCNN — A hybrid deep learning-based predictive model for
+BiCuDNNLSTM-1dCNN - A hybrid deep learning-based predictive model for
 stock price prediction. Expert Systems with Applications, 202. 
 10.1016/j.eswa.2022.117123
 
