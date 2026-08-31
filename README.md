@@ -1,5 +1,27 @@
 # Index-Rebalancing
-Personal project (then used as final project for Machine Learning for Engineers course UMass Amherst Spring 2023). Focused on index rebalancing trading strategy
+
+<p>
+  <img src="https://img.shields.io/badge/domain-quantitative%20finance-0f766e?style=for-the-badge" alt="Quantitative finance">
+  <img src="https://img.shields.io/badge/models-linear%20regression%20%2B%20LSTM-2563eb?style=for-the-badge" alt="Linear regression and LSTM">
+  <img src="https://img.shields.io/badge/data-S%26P%20rebalancing-7c3aed?style=for-the-badge" alt="S and P index rebalancing">
+</p>
+
+Can machine learning identify which stocks will move after they are added to an S&P index?
+This UMass Amherst research project combines market data, linear regression, and LSTM models to study the 24-hour price effect around index-rebalancing announcements.
+
+## At a glance
+
+| Question | Approach | Main limitation |
+| --- | --- | --- |
+| Forecast the price change after an index addition. | Compare interpretable linear regression with an LSTM using company, sector, index, volume, dividend, and market-cap features. | The final dataset contained only 93 usable observations because of historical API coverage and missing data. |
+
+<p align="center">
+  <img src="effect-of-rebalancing-on-stock-prices.png" alt="Average price effects around index rebalancing" width="49%">
+  <img src="actual-vs-predicted-24hours-after-release.png" alt="Actual versus predicted price changes" width="49%">
+</p>
+
+> [!NOTE]
+> This is an exploratory research project, not investment advice or evidence of a production-ready trading strategy.
 
 # Abstract
 This project combines our knowledge of mathematics, economics, and computer engineering to develop a comprehensive study exploring the predictive power of machine learning in the context of index rebalancing and its subsequent impact on stock prices. Drawing inspiration from our shared fascination with quantitative finance, we sought to construct a robust trading strategy and assess its profitability. Building upon existing research and literature, we embarked on collecting and preprocessing extensive datasets. Through the application of linear regression, we derived an equation that assigned weights to individual input variables based on their efficacy in forecasting price effects. Our findings shed light on the potential for machine learning techniques to enhance understanding and decision-making in the realm of financial markets, presenting a promising avenue for further exploration and refinement of predictive models.
@@ -131,4 +153,3 @@ Research Working Paper. The-Anatomy-of-Index-Rebalancings-Dec-22-2021.pdf
 Chang, Y., Hong, H., Liskovich, I. (2013). Regression Discontinuity and the Price Effects 
 of Stock Market Indexing. National Bureau of Economic Research. 
 http://www.nber.org/papers/w19290
-
