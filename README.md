@@ -4,6 +4,8 @@
   <img src="https://img.shields.io/badge/domain-quantitative%20finance-0f766e?style=for-the-badge" alt="Quantitative finance">
   <img src="https://img.shields.io/badge/models-linear%20regression%20%2B%20LSTM-2563eb?style=for-the-badge" alt="Linear regression and LSTM">
   <img src="https://img.shields.io/badge/data-S%26P%20rebalancing-7c3aed?style=for-the-badge" alt="S and P index rebalancing">
+  <a href="https://github.com/lukegeel101/Index-Rebalancing/actions/workflows/ci.yml"><img src="https://github.com/lukegeel101/Index-Rebalancing/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-16a34a?style=for-the-badge" alt="MIT license"></a>
 </p>
 
 Can machine learning identify which stocks will move after they are added to an S&P index?
@@ -13,7 +15,7 @@ This UMass Amherst research project combines market data, linear regression, and
 
 | Question | Approach | Main limitation |
 | --- | --- | --- |
-| Forecast the price change after an index addition. | Compare interpretable linear regression with an LSTM using company, sector, index, volume, dividend, and market-cap features. | The final dataset contained only 93 usable observations because of historical API coverage and missing data. |
+| Forecast the price change after an index addition. | Compare interpretable linear regression with an LSTM using company, sector, index, volume, dividend, and market-cap features. | The committed dataset contains only 92 usable observations because of historical API coverage and missing data. |
 
 <p align="center">
   <img src="effect-of-rebalancing-on-stock-prices.png" alt="Average price effects around index rebalancing" width="49%">
@@ -22,6 +24,27 @@ This UMass Amherst research project combines market data, linear regression, and
 
 > [!NOTE]
 > This is an exploratory research project, not investment advice or evidence of a production-ready trading strategy.
+
+## Reproduce the committed evaluation
+
+The supported evaluation path fingerprints the committed CSV and recomputes its coverage and descriptive metrics without retraining the historical notebooks.
+
+```bash
+python3 scripts/evaluate_dataset.py --check
+python3 -m unittest discover -s tests -v
+```
+
+| Verified dataset metric | Result |
+| --- | ---: |
+| Observations | 92 |
+| Unique tickers | 91 |
+| S&P indices | 3 |
+| GICS sectors | 11 |
+| Release-date coverage | 2021-05-03 to 2022-12-28 |
+| Positive 24-hour post-release observations | 74 of 92, or 80.43% |
+
+Read [the evaluation method](docs/evaluation.md), [the cleaned reported results](docs/results.md), and [the v0.1.0 release scope](docs/releases/v0.1.0.md).
+Use `environment.yml` only when exploring the preserved notebook-era workflow.
 
 # Abstract
 This project combines our knowledge of mathematics, economics, and computer engineering to develop a comprehensive study exploring the predictive power of machine learning in the context of index rebalancing and its subsequent impact on stock prices. Drawing inspiration from our shared fascination with quantitative finance, we sought to construct a robust trading strategy and assess its profitability. Building upon existing research and literature, we embarked on collecting and preprocessing extensive datasets. Through the application of linear regression, we derived an equation that assigned weights to individual input variables based on their efficacy in forecasting price effects. Our findings shed light on the potential for machine learning techniques to enhance understanding and decision-making in the realm of financial markets, presenting a promising avenue for further exploration and refinement of predictive models.
@@ -39,7 +62,7 @@ Regarding the state-of-the-art approaches, hybrid neural networks have emerged a
 In conclusion, the reviewed literature provides valuable insights into machine learning techniques and stock market dynamics. Studies by Escobar et al. (2021), Guo (2022), Mehtab and Sen (2019), and Chang et al. (2013) offer diverse methodologies and approaches. Hybrid neural networks currently dominate the field, although interpretability remains a consideration.
 
 # Dataset and Features
-In this study, we created a dataset by collecting publicly available information from YAHOO Finance. The dataset focused on stocks that were added to various indices of the S&P, including the S&P 500, S&P SmallCap 600, and S&P MidCap 400. The data covered the period from May 2021 to January 2023 and consisted of 93 data samples. To ensure data quality, we performed an 80-20 split to divide the dataset into training and test data. The original dataset was larger, with over 500 data samples, but it was narrowed down to stocks added to the specified S&P indices, and stocks with missing data were removed. Additionally, due to API limitations, we had to further trim down our dataset.
+In this study, we created a dataset by collecting publicly available information from Yahoo Finance. The committed dataset focuses on stocks added to the S&P 500, S&P SmallCap 600, and S&P MidCap 400. It covers releases from May 2021 through December 2022 and contains 92 data records. To ensure data quality, we performed an 80-20 split to divide the dataset into training and test data. The original dataset was larger, with over 500 data samples, but it was narrowed down to stocks added to the specified S&P indices, and stocks with missing data were removed. Additionally, due to API limitations, we had to further trim down our dataset.
 To preprocess the data, we developed a PDF reader that utilized Tabula in Python. This reader extracted the necessary information from the rebalance list PDFs obtained from the S&P global website (Example of a rebalance list). We then used the Yahoo Finance (YFinance) API to augment the dataset with stock-specific information such as price, volume, industry, and sector.
 The dataset consisted of the following features:
 Stocks being added or removed from the index
@@ -73,54 +96,19 @@ As you can see, none of the groups had any significant results, except for that 
 After seeing these results, we decided to shift our focus solely on the stocks being added into indexes and their results during the 24 hours after the lists were released. Our main goal is to be able to predict which stocks will be affected the greatest and potentially use this as a profitable trading strategy.
 Our first model was a linear regression model from the sklearn library using a 80-20 training-test data split. The input variables were the sector, index, and company performance leading up to the release for 3 different lengths of time, 1 week, 5 weeks, and 20 weeks. We also included the total market cap of the index as well as the 2 week volume average and the sum of dividends paid out by the stock over the previous 10 weeks. The model was trained for 1000 epochs but the average clf score was -0.1, which is far from perfect. However, we were able to get some valuable information when we outputted the coefficients of the linear regression equation to see which variables had the biggest impact on the desired result. According to the coefficients, the 20-week performance variables were far less important than the 1-week and 5-week variables. Additionally, the 2 week average volume traded of each stock didn’t have much of an impact, but whether or not the stock paid out dividends did. We still wanted to know if this linear model would have been able to be profitable with any adjustments, so what we did was select only the stocks where the predicted output was above a certain amount. We played around with this to see at what threshold was the most profitable and our answer was 7%. When we only selected the stocks that the linear regression model predicted a change of 7% or more, the actual average change was 8.24%
 
-| Actual change | Predicted change |
-|--------------:|-----------------:|
-|      8.139869 |        7.252531 |
-|      6.788077 |        8.755144 |
-|     20.017240 |        8.771344 |
-|      5.838512 |        8.278123 |
-|     13.982063 |        7.147442 |
-|     14.456949 |        8.085960 |
-|      8.574881 |        8.280803 |
-|      9.626756 |        8.463116 |
-|      0.129809 |        8.061031 |
-|     -3.988344 |        8.188798 |
-|      7.583768 |        7.124308 |
-|      5.870947 |        8.966869 |
-|     12.333095 |        7.076790 |
-|     11.145196 |        9.175817 |
-|     20.074626 |        7.959058 |
-|     14.506850 |        8.513511 |
-|      3.864210 |        7.944864 |
-|     11.216861 |        8.817162 |
-|     17.317569 |        9.026893 |
-|      7.387385 |       11.510598 |
-|      8.369286 |        8.518804 |
-|     13.048085 |        8.883695 |
-|      2.650797 |        8.137456 |
-|     11.066149 |        9.716412 |
-|      6.897417 |       10.332827 |
-|     -3.012613 |        8.042343 |
-|      6.066175 |        7.767262 |
-|     -1.764384 |        8.110319 |
-|      1.555865 |        7.585922 |
-|     10.234158 |        9.394775 |
-|      0.833764 |        8.469924 |
-|     13.903845 |        8.153528 |
-|      7.182159 |        7.932592 |
-
+The full 33-row threshold table is preserved in [docs/results.md](docs/results.md), alongside the reported model metrics and their reproducibility caveats.
 
 After experimenting with linear regression models, we then decided to implement a Long Short-Term Memory network. Similar to the linear regression model, we used the same variety of features related to sector performance, index performance, and company performance during three distinct periods preceding the rebalance list release. The target variable or output used for the LSTM model is the price percentage change twenty four hours after the list release. We split the dataset into training and test sets, 80% training and 20% testing. Next, we normalized the data using MinMaxScaler from Scikit-learn so that no single feature dominates over the other features, promoting fair learning from all of the features.
 	The model we created consisted of an input LSTM layer with 64 units, two dense layers with each 32 units and Rectified Linear Unit activation (ReLU), and it ended with a single unit output layer for predicting the price percentage change twenty four hours after the rebalance list was released. We compiled the model with the Mean Squared Error loss function and Adam optimizer. The model was trained for 200 epochs with a batch size of 36, but it underfit the data. The mean absolute error was 0.194 and the predicted price change was 7.15%. To better fit the model we utilized 5-fold cross-validation to split the data into subsets, and then train and evaluate it five times, each time with a different subset as the validation set. The graph below shows the performance on the 5th fold of the cross-validation.
 
 ![Alt Text](actual-vs-predicted-24hours-after-release.png)
 
-The graph shows the actual price change vs the predicted price change twenty four hours after the release of the rebalance list. As you can see the model’s predictions show a degree of conformity with the actual changes, and the model had only a mean absolute error of 0.132. This is a significant improvement compared to the previous model, although the model doesn’t perfectly capture all the fluctuations it follows the general trend of the actual price changes. This is to be expected, given the complex nature of the factors that drive stock prices, nevertheless the mse of 0.132, while not insignificant, is relatively low. This shows that on average our model predicted values that were fairly close to the actual values. 
+The graph shows actual and predicted price changes 24 hours after release of the rebalance list. The original narrative reported an error of 0.132 for this fold, but labeled it as both MAE and MSE. Because the committed notebook output does not disambiguate that label, this repository preserves the value as a reported historical result rather than a CI-verified model metric.
 
 
 # Conclusion and Future work
 
-The experiment/research is far from perfect and there are many things that we wish we could have done differently, but certain factors limited us. Firstly, the api we used to get the price and other information of the stock, YahooFinance, only allowed us to get information within the past 2 years. This greatly limited us as we had collected data going back to 2015. In addition, the API isn’t very well maintained to begin with as it often wasn’t able to get information on certain stocks. In the end, our dataset only included 93 stocks, but we had collected information on over 500 stocks. We believe that this greatly reduced the accuracy of our model as if we had a larger dataset, we likely could have gotten a more accurate model.
+The experiment/research is far from perfect and there are many things that we wish we could have done differently, but certain factors limited us. Firstly, the API we used to get the price and other information of the stock, Yahoo Finance, only allowed us to get information within the past 2 years. This greatly limited us as we had collected data going back to 2015. In addition, the API was not always able to return information on certain stocks. In the end, the committed dataset includes 92 records representing 91 unique tickers, although we had collected information on over 500 stocks. We believe that this greatly reduced the accuracy of our model as if we had a larger dataset, we likely could have gotten a more accurate model.
 Despite these limitations, we were able to create an LSTM model that showed promising potential. Comparing the linear regression model and the LSTM models we created, we found the highest performing model to be the LSTM model that incorporated 5-fold cross-validation. We believe that this model performed the best because, unlike linear regression models, LSTM models can remember long-term dependencies in time series data, which is key in stock price movements. This specific LSTM model was able to collect better results due to the 5-fold cross-validation, which helped the model to reduce the risk of overfitting and provide a better understanding of how the model will perform on unseen data. Understanding the model’s performance is especially important in stock market predictions, where the model’s ability to perform well across various market conditions is crucial. The analysis of these results offers insights into ways to improve the model in future trials. Along with gathering more data,  we could investigate the possibility of adding extra features to the model such as company fundamentals, economies indicators, or even industry specific indicators. 
 
 

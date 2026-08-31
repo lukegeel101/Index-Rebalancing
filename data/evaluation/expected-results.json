@@ -1,0 +1,15 @@
+{
+  "dataset_sha256": "f0f4d1e21be2fe0b6bc56b5254b48c6190d9010b87e9d12fff1843509b513755",
+  "duplicate_ticker_rows": 1,
+  "first_release_date": "2021-05-03",
+  "index_count": 3,
+  "last_release_date": "2022-12-28",
+  "mean_24h_post_release_change": 5.4585,
+  "median_24h_post_release_change": 6.6303,
+  "positive_24h_post_release_observations": 74,
+  "positive_24h_post_release_percent": 80.43,
+  "records": 92,
+  "sector_count": 11,
+  "target_values_present": 92,
+  "unique_tickers": 91
+}
