@@ -10,7 +10,7 @@ Verified fix: keep the complete paper intact while adding a concise discovery la
 
 Issue: making a quantitative-finance project more visually compelling can accidentally make limited-sample results sound production-ready.
 
-Verified fix: describe the work as exploratory, surface the 93-observation limitation above the fold, and include a visible non-advice note before the full paper.
+Verified fix: describe the work as exploratory, surface the 92-record committed-dataset limitation above the fold, and include a visible non-advice note before the full paper.
 ## Avoid unmatched configuration globs in zsh
 
 Issue: a repository inventory command used `requirements*.txt`, and zsh aborted because no requirements file existed yet.
